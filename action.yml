@@ -4,6 +4,9 @@ outputs:
   image-tag:
     description: "Image Tag"
     value: ${{ steps.image-info.outputs.image-tag }}
+  commit-message:
+    description: "Commit Message"
+    value: ${{ steps.image-info.outputs.commit-message }}
   ecr-repository:
     description: "ECR Repository"
     value: ${{ steps.image-info.outputs.ecr-repository }}
@@ -75,4 +78,5 @@ runs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "ecr-repository=$(echo $ECR_REPOSITORY)" >> $GITHUB_OUTPUT
         echo "image-tag=$(echo $IMAGE_TAG)" >> $GITHUB_OUTPUT
+        echo "commit-message=$(git log --pretty=format:'[%an] %s' -1)" >> $GITHUB_OUTPUT
       shell: bash
