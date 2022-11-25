@@ -64,6 +64,9 @@ runs:
       id: image
       run: |
         VERSION=$(echo ${{ github.sha }} | cut -c1-8)
+        if [ "$GITHUB_REF_TYPE" == "tag" ]; then
+          VERSION=$GITHUB_REF_NAME
+        fi
         echo VERSION=$VERSION
         echo "::set-output name=version::$VERSION"
       shell: bash
