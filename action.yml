@@ -30,6 +30,9 @@ inputs:
     required: true
   ecr-repository:
     required: true
+  image-tag:
+    description: 'Image Tag'
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -66,6 +69,9 @@ runs:
         VERSION=$(echo ${{ github.sha }} | cut -c1-8)
         if [ "$GITHUB_REF_TYPE" == "tag" ]; then
           VERSION=$GITHUB_REF_NAME
+        fi
+        if [ $(echo "x${{ inputs.image-tag }}") != "x" ]; then
+          VERSION=${{ inputs.image-tag }}
         fi
         echo VERSION=$VERSION
         echo "::set-output name=version::$VERSION"
