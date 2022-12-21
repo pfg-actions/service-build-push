@@ -5,8 +5,8 @@ set -eu
 export SERVICE=$1
 export GIT_REPO=$2
 export API_VERSION=$3
+export GIT_TAG=$3
 echo "Service: $SERVICE"
-export GIT_TAG=$(git name-rev --tags --name-only $(git rev-parse HEAD))
 export COMMIT_HASH=$(git rev-parse HEAD)
 export COMMIT_HASH_SHORT=$(git rev-parse --short HEAD)
 export BUILT_AT=$(LC_ALL=C date -u '+%d %B %Y %r (UTC)')
