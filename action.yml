@@ -89,8 +89,8 @@ runs:
         ECR_REPOSITORY: ${{ inputs.ecr-repository }}
         IMAGE_TAG: ${{ steps.image.outputs.version }}
       run: |
-        docker buildx build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-amd64 . && docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-amd64
-        docker buildx build --platform linux/arm64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-arm64 . && docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-arm64
+        docker buildx build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-amd64 . -o type=image && docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-amd64
+        docker buildx build --platform linux/arm64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-arm64 . -o type=image && docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-arm64
         docker manifest create $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-amd64 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG-arm64
         docker manifest push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "ecr-repository=$(echo $ECR_REPOSITORY)" >> $GITHUB_OUTPUT
