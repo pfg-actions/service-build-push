@@ -18,17 +18,18 @@ export LDFLAGS="-w -s -X '${IMPORT_VERSION}.Version=${GIT_TAG}' \
 
 echo "${LDFLAGS}"
 
-echo "Build"
-for d in `ls cmd` ; do 
-    if [ $d == $SERVICE ]; then
-        GOOS=linux GOARCH=amd64 GO111MODULE=on CGO_ENABLED=0 go build -ldflags="${LDFLAGS}" -o ./bin/$SERVICE ./cmd/$d/main.go &&  echo -n "${COMMIT_HASH_SHORT} (${GIT_TAG})" > ./bin/$SERVICE.commit
-    else 
-        GOOS=linux GOARCH=amd64  GO111MODULE=on CGO_ENABLED=0 go build -ldflags="${LDFLAGS}" -o ./bin/$SERVICE-$d ./cmd/$d/main.go && echo -n "${COMMIT_HASH_SHORT} (${GIT_TAG})"> ./bin/$SERVICE-$d.commit
-    fi
-    if [ $? -ne 0 ]; then
-        echo 'An error has occurred! Aborting build...'
-        exit 1
-    fi
-done
+for arch in amd64 arm64; do
+    echo "[$arch] Go build"
+    for d in `ls cmd` ; do
+        if [ $d == $SERVICE ]; then
+            GOOS=linux GOARCH=$arch GO111MODULE=on CGO_ENABLED=0 go build -ldflags="${LDFLAGS}" -o ./bin/$arch/$SERVICE ./cmd/$d/main.go &&  echo -n "${COMMIT_HASH_SHORT} (${GIT_TAG})" > ./bin/$SERVICE.commit
+        else
+            GOOS=linux GOARCH=$arch  GO111MODULE=on CGO_ENABLED=0 go build -ldflags="${LDFLAGS}" -o ./bin/$arch/$SERVICE-$d ./cmd/$d/main.go && echo -n "${COMMIT_HASH_SHORT} (${GIT_TAG})"> ./bin/$SERVICE-$d.commit
+        fi
+        if [ $? -ne 0 ]; then
+            echo "[$arch] An error has occurred! Aborting go build..."
+            exit 1
+        fi
+    done
 
-echo "Build $SERVICE service completed!"
+    echo "Build service: $SERVICE platform: $arch completed!"

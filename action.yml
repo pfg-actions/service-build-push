@@ -76,6 +76,12 @@ runs:
         echo VERSION=$VERSION
         echo "::set-output name=version::$VERSION"
       shell: bash
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+      with:
+      platforms: 'arm64,arm64'
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
     - name: Build, tag, and push image to Amazon ECR
       id: image-info
       env:
@@ -83,8 +89,9 @@ runs:
         ECR_REPOSITORY: ${{ inputs.ecr-repository }}
         IMAGE_TAG: ${{ steps.image.outputs.version }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker buildx build \
+        --platform linux/amd64,linux/arm64 \
+        --push -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         echo "ecr-repository=$(echo $ECR_REPOSITORY)" >> $GITHUB_OUTPUT
         echo "image-tag=$(echo $IMAGE_TAG)" >> $GITHUB_OUTPUT
         echo "commit-message=$(git log --pretty=format:'[%an] %s' -1)" >> $GITHUB_OUTPUT
