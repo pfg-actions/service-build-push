@@ -33,3 +33,4 @@ for arch in amd64 arm64; do
     done
 
     echo "Build service: $SERVICE platform: $arch completed!"
+done
